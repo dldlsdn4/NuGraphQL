@@ -45,8 +45,8 @@ class _MyHomePageState extends State<GraphQLBlocPatternScreen> {
               builder:
                   (BuildContext context, AsyncSnapshot<List<Repo>?> snapshot) {
                 if (snapshot.hasError) {
-                  return Text('\nErrors: \n  ' +
-                      (snapshot.error as List<dynamic>).join(',\n  '));
+                  return Text('\nErrors: \n  ' + snapshot.error.toString());
+                  // (snapshot.error as List<dynamic>).join(',\n  '));
                 }
                 if (snapshot.data == null) {
                   return const Center(
