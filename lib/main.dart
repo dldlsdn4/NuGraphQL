@@ -11,8 +11,37 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("GraphQL Example"),
+      ),
+      body: Center(
+          child: ElevatedButton(
+        child: Text("submit"),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SubmitGraphQL(),
+              ));
+        },
+      )),
+    );
+  }
+}
+
+class SubmitGraphQL extends StatelessWidget {
+  const SubmitGraphQL({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +67,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("GraphQL Client")),
+      appBar: AppBar(title: const Text("GraphQL Client")),
       body: Query(
         options: QueryOptions(document: gql(r'''
           query{
