@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
+const productQL = r'''
+          query GetContinent{
+            continent(code: "AS") {
+              countries{
+                code
+                name
+              }
+            }
+        }''';
+
 void main() {
   runApp(
     const MaterialApp(
@@ -27,7 +37,7 @@ class _MyAppState extends State<MyApp> {
       ),
       body: Center(
           child: ElevatedButton(
-        child: Text("submit"),
+        child: const Text("submit"),
         onPressed: () {
           Navigator.push(
               context,
@@ -69,31 +79,47 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(title: const Text("GraphQL Client")),
       body: Query(
-        options: QueryOptions(document: gql(r'''
-          query{
-              country(code:"KR"){
-              name
-              code
-              phone
-              currency
-              continent{
-                name
-                code
-              }
-              languages{
-                name
-              }
-            }
-        }''')),
+        options: QueryOptions(
+          document: gql(productQL),
+        ),
         builder: (result, {fetchMore, refetch}) {
-          if (result.data == null) {
-            return Text("No Data Found !");
+          if (result.hasException) {
+            return Text(result.exception.toString());
           }
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              return Text(result.data.toString());
-            },
-            itemCount: result.data?.length,
+
+          if (result.isLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          final queryList = result.data?["continent"]["countries"];
+
+          return Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("Countries List",
+                    style: Theme.of(context).textTheme.headline5),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  itemCount: queryList.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 2.0,
+                    crossAxisSpacing: 2.0,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemBuilder: (context, index) {
+                    // print(queryList[index]);
+                    return Text(queryList[index]['code'] +
+                        "\n" +
+                        queryList[index]['name']);
+                  },
+                ),
+              )
+            ],
           );
         },
       ),
